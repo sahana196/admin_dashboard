@@ -89,6 +89,3 @@ npm run dev
 ```
 *The application will handle requests on `http://localhost:5173`.*
 
-## 📜 License
-
-This project is licensed under the ISC License.
