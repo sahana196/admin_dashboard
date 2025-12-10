@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "Admin",
+    "department": "IT",
+    "status": "Active"
+  },
+  {
+    "id": 2,
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "role": "Manager",
+    "department": "HR",
+    "status": "Active"
+  },
+  {
+    "id": 3,
+    "firstName": "Alice",
+    "lastName": "Johnson",
+    "role": "Developer",
+    "department": "Engineering",
+    "status": "Active"
+  },
+  {
+    "id": 4,
+    "firstName": "Bob",
+    "lastName": "Brown",
+    "role": "Designer",
+    "department": "Design",
+    "status": "Inactive"
+  },
+  {
+    "id": 5,
+    "firstName": "Charlie",
+    "lastName": "Davis",
+    "role": "Analyst",
+    "department": "Finance",
+    "status": "Active"
+  },
+  {
+    "id": 6,
+    "firstName": "sahana",
+    "lastName": "K",
+    "role": "User",
+    "department": "Engineering",
+    "status": "Active"
+  },
+  {
+    "id": 7,
+    "firstName": "Maya",
+    "lastName": "R",
+    "role": "Developer",
+    "department": "Engineering",
+    "status": "Active"
+  },
+  {
+    "id": 8,
+    "firstName": "soniya",
+    "lastName": "Chaudhry",
+    "role": "Analyst",
+    "department": "IT",
+    "status": "Active"
+  },
+  {
+    "id": 9,
+    "firstName": "kiran",
+    "lastName": "kori",
+    "role": "Manager",
+    "department": "Marketing",
+    "status": "Active"
+  },
+  {
+    "id": 10,
+    "firstName": "suprita",
+    "lastName": "padukone",
+    "role": "Designer",
+    "department": "Engineering",
+    "status": "Active"
+  },
+  {
+    "id": 11,
+    "firstName": "savitri",
+    "lastName": "U",
+    "role": "Developer",
+    "department": "Sales",
+    "status": "Active"
+  }
+]

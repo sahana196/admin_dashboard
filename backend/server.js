@@ -14,21 +14,94 @@ const kpis = {
     openTickets: 12
 };
 
-const employees = Array.from({ length: 50 }, (_, i) => ({
-    id: i + 1,
-    firstName: `First${i}`,
-    lastName: `Last${i}`,
-    role: i % 3 === 0 ? 'Admin' : 'User',
-    department: i % 2 === 0 ? 'Engineering' : 'Sales',
-    status: i % 4 === 0 ? 'Inactive' : 'Active',
-}));
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+const xlsx = require('xlsx');
+
+// Configure Multer for memory storage
+const upload = multer({ storage: multer.memoryStorage() });
+
+const EMPLOYEES_FILE = path.join(__dirname, 'data', 'employees.json');
+
+// Helper to read data
+const getEmployees = () => {
+    try {
+        if (!fs.existsSync(EMPLOYEES_FILE)) {
+            // Initialize if not exists
+            fs.writeFileSync(EMPLOYEES_FILE, '[]');
+            return [];
+        }
+        const data = fs.readFileSync(EMPLOYEES_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        console.error("Error reading employees file:", err);
+        return [];
+    }
+};
+
+// Helper to write data
+const saveEmployees = (data) => {
+    try {
+        fs.writeFileSync(EMPLOYEES_FILE, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error("Error writing employees file:", err);
+    }
+};
+
+const ROLES_FILE = path.join(__dirname, 'data', 'roles.json');
+
+const getRoles = () => {
+    try {
+        if (!fs.existsSync(ROLES_FILE)) {
+            fs.writeFileSync(ROLES_FILE, '[]');
+            return [];
+        }
+        const data = fs.readFileSync(ROLES_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        console.error("Error reading roles file:", err);
+        return [];
+    }
+};
+
+const saveRoles = (data) => {
+    try {
+        fs.writeFileSync(ROLES_FILE, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error("Error writing roles file:", err);
+    }
+};
+
+const DEPARTMENTS_FILE = path.join(__dirname, 'data', 'departments.json');
+
+const getDepartments = () => {
+    try {
+        if (!fs.existsSync(DEPARTMENTS_FILE)) {
+            fs.writeFileSync(DEPARTMENTS_FILE, '[]');
+            return [];
+        }
+        const data = fs.readFileSync(DEPARTMENTS_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        console.error("Error reading departments file:", err);
+        return [];
+    }
+};
+
+const saveDepartments = (data) => {
+    try {
+        fs.writeFileSync(DEPARTMENTS_FILE, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error("Error writing departments file:", err);
+    }
+};
 
 // Endpoints
 
 // 1. KPIs
 app.get('/api/kpis', (req, res) => {
-    const { range } = req.query; // '1h', '24h', '7d', '30d'
-    // In a real app, filtering logic would go here
+    const { range } = req.query;
     res.json(kpis);
 });
 
@@ -45,6 +118,24 @@ app.get('/api/metrics', (req, res) => {
 
 // 3. Employees (Pagination)
 app.get('/api/employees', (req, res) => {
+    let employees = getEmployees();
+
+    // Filtering
+    const { department, search } = req.query;
+
+    if (department) {
+        employees = employees.filter(e => e.department === department);
+    }
+
+    if (search) {
+        const lowerSearch = search.toLowerCase();
+        employees = employees.filter(e =>
+            e.firstName.toLowerCase().includes(lowerSearch) ||
+            e.lastName.toLowerCase().includes(lowerSearch) ||
+            e.role.toLowerCase().includes(lowerSearch)
+        );
+    }
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const start = (page - 1) * limit;
@@ -60,18 +151,53 @@ app.get('/api/employees', (req, res) => {
 });
 
 app.post('/api/employees', (req, res) => {
+    const employees = getEmployees();
     const newEmployee = {
-        id: employees.length + 1,
+        id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1,
         ...req.body,
-        // Default values if missing
         status: req.body.status || 'Active',
         role: req.body.role || 'User'
     };
     employees.push(newEmployee);
+    saveEmployees(employees);
     res.status(201).json(newEmployee);
 });
 
+app.post('/api/employees/upload', upload.single('file'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const data = xlsx.utils.sheet_to_json(sheet);
+
+        const employees = getEmployees();
+        let maxId = employees.length > 0 ? Math.max(...employees.map(e => e.id)) : 0;
+
+        const newEmployees = data.map(row => ({
+            id: ++maxId,
+            firstName: row['First Name'] || row.firstName || 'Unknown',
+            lastName: row['Last Name'] || row.lastName || 'User',
+            role: row.Role || row.role || 'User',
+            department: row.Department || row.department || 'Engineering',
+            status: row.Status || row.status || 'Active'
+        }));
+
+        const updatedEmployees = [...employees, ...newEmployees];
+        saveEmployees(updatedEmployees);
+
+        res.status(201).json({ message: `Successfully imported ${newEmployees.length} employees`, count: newEmployees.length });
+    } catch (error) {
+        console.error("Upload error:", error);
+        res.status(500).json({ error: "Failed to process file" });
+    }
+});
+
 app.get('/api/employees/:id', (req, res) => {
+    const employees = getEmployees();
     const emp = employees.find(e => e.id == req.params.id);
     if (emp) res.json(emp);
     else res.status(404).json({ error: 'Not found' });
@@ -129,6 +255,7 @@ app.get('/api/tickets/status', (req, res) => {
 app.get('/api/departments/distribution', (req, res) => {
     // Dynamically map department names to their employee counts
     // Note: In a real DB, we would join tables. Here we use the 'employeeCount' from the departments data.
+    const departments = getDepartments();
     const distribution = departments.map(dept => ({
         name: dept.name,
         count: dept.employeeCount || 0
@@ -146,54 +273,50 @@ app.get('/api/activity/recent', (req, res) => {
     ]);
 });
 
-// 6. Roles (RBAC)
-const roles = [
-    { id: 1, name: 'Admin', permissions: ['manageUsers', 'viewReports', 'editSettings', 'manageRoles'], usersCount: 2 },
-    { id: 2, name: 'Manager', permissions: ['manageUsers', 'viewReports'], usersCount: 5 },
-    { id: 3, name: 'User', permissions: ['viewReports'], usersCount: 42 },
-];
+
 
 app.get('/api/roles', (req, res) => {
+    const roles = getRoles();
     res.json(roles);
 });
 
 app.post('/api/roles', (req, res) => {
+    const roles = getRoles();
     const newRole = {
-        id: roles.length + 1,
+        id: roles.length > 0 ? Math.max(...roles.map(r => r.id)) + 1 : 1,
         ...req.body,
         usersCount: 0
     };
     roles.push(newRole);
+    saveRoles(roles);
     res.status(201).json(newRole);
 });
 
 // 7. Departments
-const departments = [
-    { id: 1, name: 'Engineering', head: 'Alice Smith', location: 'Floor 3', employeeCount: 45 },
-    { id: 2, name: 'Sales', head: 'Bob Jones', location: 'Floor 2', employeeCount: 32 },
-    { id: 3, name: 'Marketing', head: 'Charlie Day', location: 'Floor 2', employeeCount: 28 },
-    { id: 4, name: 'HR', head: 'Diana Prince', location: 'Floor 1', employeeCount: 12 },
-];
-
 app.get('/api/departments', (req, res) => {
+    const departments = getDepartments();
     res.json(departments);
 });
 
 app.post('/api/departments', (req, res) => {
+    const departments = getDepartments();
     const newDept = {
-        id: departments.length + 1,
+        id: departments.length > 0 ? Math.max(...departments.map(d => d.id)) + 1 : 1,
         ...req.body,
         employeeCount: 0
     };
     departments.push(newDept);
+    saveDepartments(departments);
     res.status(201).json(newDept);
 });
 
 app.put('/api/departments/:id', (req, res) => {
+    const departments = getDepartments();
     const id = parseInt(req.params.id);
     const index = departments.findIndex(d => d.id === id);
     if (index !== -1) {
         departments[index] = { ...departments[index], ...req.body };
+        saveDepartments(departments);
         res.json(departments[index]);
     } else {
         res.status(404).json({ error: "Department not found" });
@@ -201,10 +324,12 @@ app.put('/api/departments/:id', (req, res) => {
 });
 
 app.delete('/api/departments/:id', (req, res) => {
+    const departments = getDepartments();
     const id = parseInt(req.params.id);
     const index = departments.findIndex(d => d.id === id);
     if (index !== -1) {
         departments.splice(index, 1);
+        saveDepartments(departments);
         res.json({ message: "Department deleted" });
     } else {
         res.status(404).json({ error: "Department not found" });

@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "name": "Admin",
+        "permissions": [
+            "manageUsers",
+            "viewReports",
+            "editSettings",
+            "manageRoles"
+        ],
+        "usersCount": 2
+    },
+    {
+        "id": 2,
+        "name": "Manager",
+        "permissions": [
+            "manageUsers",
+            "viewReports"
+        ],
+        "usersCount": 5
+    },
+    {
+        "id": 3,
+        "name": "User",
+        "permissions": [
+            "viewReports"
+        ],
+        "usersCount": 42
+    },
+    {
+        "id": 4,
+        "name": "Developer",
+        "permissions": [
+            "viewReports",
+            "gitAccess"
+        ],
+        "usersCount": 12
+    },
+    {
+        "id": 5,
+        "name": "Designer",
+        "permissions": [
+            "viewReports",
+            "designTools"
+        ],
+        "usersCount": 5
+    },
+    {
+        "id": 6,
+        "name": "Analyst",
+        "permissions": [
+            "viewReports",
+            "analytics"
+        ],
+        "usersCount": 3
+    }
+]

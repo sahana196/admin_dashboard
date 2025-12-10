@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Typography, Box, Grid, CircularProgress, Container } from '@mui/material';
 import GroupIcon from '@mui/icons-material/Group';
 import BoltIcon from '@mui/icons-material/Bolt';
@@ -13,6 +14,7 @@ import useSSE from '../hooks/useSSE';
 const Dashboard = () => {
     const { timeRange } = useTimeRange();
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
     const [data, setData] = useState({
         kpis: null,
         growth: [],
@@ -65,6 +67,22 @@ const Dashboard = () => {
         { value: 10 }, { value: 15 }, { value: 12 }, { value: 20 }, { value: 25 }, { value: 22 }, { value: 30 }
     ];
 
+    const handleCreateReport = () => {
+        navigate('/reports');
+    };
+
+    const handleExport = () => {
+        alert("Preparing Export... Check your downloads shortly.");
+    };
+
+    const handleCreateUser = () => {
+        navigate('/employees');
+    };
+
+    const handleNewTicket = () => {
+        alert("New Ticket Modal would open here.");
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
@@ -81,8 +99,8 @@ const Dashboard = () => {
                     <p>Key metrics & activity</p>
                 </div>
                 <div className="cta">
-                    <button className="btn">Create Report</button>
-                    <button className="btn secondary">Export</button>
+                    <button className="btn" onClick={handleCreateReport}>Create Report</button>
+                    <button className="btn secondary" onClick={handleExport}>Export</button>
                 </div>
             </header>
 
@@ -173,9 +191,9 @@ const Dashboard = () => {
                 <div className="widget">
                     <strong>Quick Actions</strong>
                     <div style={{ marginTop: '10px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        <button className="btn secondary" style={{ padding: '8px 10px', fontSize: '13px' }}>Create User</button>
-                        <button className="btn secondary" style={{ padding: '8px 10px', fontSize: '13px' }}>New Ticket</button>
-                        <button className="btn" style={{ padding: '8px 10px', fontSize: '13px' }}>Export</button>
+                        <button className="btn secondary" style={{ padding: '8px 10px', fontSize: '13px' }} onClick={handleCreateUser}>Create User</button>
+                        <button className="btn secondary" style={{ padding: '8px 10px', fontSize: '13px' }} onClick={handleNewTicket}>New Ticket</button>
+                        <button className="btn" style={{ padding: '8px 10px', fontSize: '13px' }} onClick={handleExport}>Export</button>
                     </div>
                 </div>
             </div>

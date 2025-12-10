@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "name": "Engineering",
+        "head": "Alice Smith",
+        "location": "Floor 3",
+        "employeeCount": 15
+    },
+    {
+        "id": 2,
+        "name": "Sales",
+        "head": "Bob Jones",
+        "location": "Floor 2",
+        "employeeCount": 3
+    },
+    {
+        "id": 3,
+        "name": "Marketing",
+        "head": "Charlie Day",
+        "location": "Floor 2",
+        "employeeCount": 8
+    },
+    {
+        "id": 4,
+        "name": "HR",
+        "head": "Diana Prince",
+        "location": "Floor 1",
+        "employeeCount": 12
+    },
+    {
+        "id": 5,
+        "name": "Design",
+        "head": "rakesh manager",
+        "location": "Floor 5th, C Block",
+        "employeeCount": 15
+    }
+]
