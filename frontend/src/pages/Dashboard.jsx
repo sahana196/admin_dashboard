@@ -3,9 +3,7 @@ import { Typography, Box, Grid, CircularProgress, Container } from '@mui/materia
 import GroupIcon from '@mui/icons-material/Group';
 import BoltIcon from '@mui/icons-material/Bolt';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 
-import KPICard from '../components/KPICard';
 import { UserGrowthChart, TicketStatusChart, DepartmentChart } from '../components/Charts';
 import RecentActivity from '../components/RecentActivity';
 import api from '../api';
@@ -76,77 +74,112 @@ const Dashboard = () => {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ mt: 2, mb: 4 }}>
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1a202c' }}>
-                    Dashboard Overview
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                    Key metrics and analytics for the last {timeRange}.
-                </Typography>
-            </Box>
+        <div className="view">
+            <header className="header">
+                <div className="left">
+                    <h1 className="page-title">Dashboard Overview</h1>
+                    <p>Key metrics & activity</p>
+                </div>
+                <div className="cta">
+                    <button className="btn">Create Report</button>
+                    <button className="btn secondary">Export</button>
+                </div>
+            </header>
 
-            {/* KPI Section */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
-                    <KPICard
-                        title="Total Users"
-                        value={data.kpis?.users}
-                        data={sparklineData}
-                        color="#8884d8"
-                        icon={<GroupIcon />}
-                        trend={12}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <KPICard
-                        title="Active Now"
-                        value={activeNowValue}
-                        data={sparklineData}
-                        color="#82ca9d"
-                        icon={<BoltIcon />}
-                        trend={5}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <KPICard
-                        title="New This Month"
-                        value={data.kpis?.newThisMonth}
-                        data={sparklineData}
-                        color="#ffc658"
-                        icon={<PersonAddIcon />}
-                        trend={-2}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <KPICard
-                        title="Open Tickets"
-                        value={data.kpis?.openTickets}
-                        data={sparklineData}
-                        color="#ff8042"
-                        icon={<ConfirmationNumberIcon />}
-                        trend={8}
-                    />
-                </Grid>
-            </Grid>
+            <div className="metrics">
+                <div className="metric">
+                    <div className="label">TOTAL USERS</div>
+                    <div className="value">{data.kpis?.users?.toLocaleString() || '0'}</div>
+                    <div className="mini">
+                        <div style={{ color: 'var(--muted)' }}>+12% vs last month</div>
+                        <svg width="80" height="28" viewBox="0 0 80 28"><path d="M2 20 C18 12 32 24 48 8 C60 0 74 16 78 12" stroke="#7c5cff" strokeWidth="2" fill="none" strokeLinecap="round" /></svg>
+                    </div>
+                </div>
 
-            {/* Analytics Section */}
-            <Grid container spacing={3}>
-                <Grid item xs={12} lg={8}>
-                    <UserGrowthChart data={data.growth} />
-                </Grid>
-                <Grid item xs={12} lg={4}>
-                    <TicketStatusChart data={data.tickets} />
-                </Grid>
+                <div className="metric">
+                    <div className="label">ACTIVE NOW</div>
+                    <div className="value">{activeNowValue || '0'}</div>
+                    <div className="mini">
+                        <div style={{ color: 'var(--muted)' }}>+5% in hour</div>
+                        <svg width="80" height="28" viewBox="0 0 80 28"><path d="M2 18 C18 16 32 10 48 14 C60 18 74 12 78 10" stroke="#10b981" strokeWidth="2" fill="none" strokeLinecap="round" /></svg>
+                    </div>
+                </div>
 
-                <Grid item xs={12} lg={6}>
-                    <DepartmentChart data={data.departments} />
-                </Grid>
-                <Grid item xs={12} lg={6}>
-                    <RecentActivity data={data.activity} />
-                </Grid>
-            </Grid>
-        </Container>
+                <div className="metric">
+                    <div className="label">NEW THIS MONTH</div>
+                    <div className="value">{data.kpis?.newThisMonth?.toLocaleString() || '0'}</div>
+                    <div className="mini">
+                        <div style={{ color: 'var(--muted)' }}>▼2% vs prev</div>
+                        <svg width="80" height="28" viewBox="0 0 80 28"><path d="M2 14 C18 6 32 18 48 12 C60 8 74 16 78 14" stroke="#f97316" strokeWidth="2" fill="none" strokeLinecap="round" /></svg>
+                    </div>
+                </div>
+
+                <div className="metric">
+                    <div className="label">OPEN TICKETS</div>
+                    <div className="value">{data.kpis?.openTickets?.toLocaleString() || '0'}</div>
+                    <div className="mini">
+                        <div style={{ color: 'var(--muted)' }}>Resolved 86%</div>
+                        <svg width="80" height="28" viewBox="0 0 80 28"><path d="M2 22 C18 18 32 12 48 14 C60 16 74 10 78 12" stroke="#fb7185" strokeWidth="2" fill="none" strokeLinecap="round" /></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid">
+                <div className="panel">
+                    <h3>User Growth</h3>
+                    <div className="chart" style={{ display: 'block', height: '300px' }}>
+                        <UserGrowthChart data={data.growth} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+                        <div style={{ color: 'var(--muted)' }}>Last 30 days</div>
+                        <div style={{ fontWeight: 800 }}>+9.4% growth</div>
+                    </div>
+                </div>
+
+                <div className="panel">
+                    <h3>Ticket Status</h3>
+                    <div className="chart" style={{ display: 'block', height: '300px' }}>
+                        <TicketStatusChart data={data.tickets} />
+                    </div>
+                    <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><div style={{ color: 'var(--muted)' }}>Closed</div><div style={{ fontWeight: 700 }}>86%</div></div>
+                    </div>
+                </div>
+
+                <div className="panel" style={{ gridColumn: '1 / -1' }}>
+                    <h3>Department Distribution</h3>
+                    <div className="chart" style={{ display: 'block', height: '300px' }}>
+                        <DepartmentChart data={data.departments} />
+                    </div>
+                </div>
+            </div>
+
+            <div className="widgets">
+                <div className="widget">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div><strong>Server Health</strong><div style={{ color: 'var(--muted)', fontSize: '13px' }}>Status & uptime</div></div>
+                        <div style={{ background: '#ecfdf5', padding: '6px 10px', borderRadius: '8px', color: '#047857', fontWeight: 700 }}>Healthy</div>
+                    </div>
+                    <div style={{ marginTop: '12px', color: 'var(--muted)' }}>CPU 32% • Memory 58% • Disk 64%</div>
+                </div>
+
+                <div className="widget">
+                    <strong>Recent Activity</strong>
+                    <div style={{ marginTop: '10px' }}>
+                        <RecentActivity data={data.activity} />
+                    </div>
+                </div>
+
+                <div className="widget">
+                    <strong>Quick Actions</strong>
+                    <div style={{ marginTop: '10px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button className="btn secondary" style={{ padding: '8px 10px', fontSize: '13px' }}>Create User</button>
+                        <button className="btn secondary" style={{ padding: '8px 10px', fontSize: '13px' }}>New Ticket</button>
+                        <button className="btn" style={{ padding: '8px 10px', fontSize: '13px' }}>Export</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
