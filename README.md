@@ -5,7 +5,7 @@ A modern, responsive Admin Dashboard application built with React and Node.js. T
 ## 🚀 Tech Stack
 
 ### Frontend
-- **Framework:** [React 19](https://react.dev/)
+- **Framework:** [React 18.3.1](https://react.dev/)
 - **Build Tool:** [Vite](https://vitejs.dev/)
 - **Styling:**
   - [Tailwind CSS v4](https://tailwindcss.com/)
