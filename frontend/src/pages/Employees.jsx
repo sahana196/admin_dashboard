@@ -13,6 +13,7 @@ const Employees = () => {
         department: 'Engineering',
         status: 'Active'
     });
+    const [editId, setEditId] = useState(null);
     const [roles, setRoles] = useState([]);
 
     const location = useLocation();
@@ -68,14 +69,38 @@ const Employees = () => {
         }
 
         try {
-            await api.post('/api/employees', formData);
-            // alert('Employee added successfully!');
+            if (editId) {
+                // Update existing
+                await api.put(`/api/employees/${editId}`, formData);
+                // alert('Employee updated successfully!');
+            } else {
+                // Create new
+                await api.post('/api/employees', formData);
+                // alert('Employee added successfully!');
+            }
             setIsModalOpen(false);
             setFormData({ firstName: '', lastName: '', role: 'User', department: 'Engineering', status: 'Active' });
+            setEditId(null);
             fetchEmployees();
         } catch (error) {
-            console.error("Failed to add employee", error);
-            alert("Failed to add employee");
+            console.error("Failed to save employee", error);
+            alert("Failed to save employee");
+        }
+    };
+
+    const handleEdit = (employee) => {
+        setFormData(employee);
+        setEditId(employee.id);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this employee?")) return;
+        try {
+            await api.delete(`/api/employees/${id}`);
+            fetchEmployees();
+        } catch (error) {
+            console.error("Failed to delete employee", error);
         }
     };
 
@@ -117,7 +142,11 @@ const Employees = () => {
                         }}
                     />
                     <button className="btn secondary" onClick={() => document.getElementById('fileUpload').click()}>Import Excel</button>
-                    <button className="btn" onClick={() => setIsModalOpen(true)}>+ Add Employee</button>
+                    <button className="btn" onClick={() => {
+                        setEditId(null);
+                        setFormData({ firstName: '', lastName: '', role: 'User', department: 'Engineering', status: 'Active' });
+                        setIsModalOpen(true);
+                    }}>+ Add Employee</button>
                 </div>
             </div>
 
@@ -146,8 +175,8 @@ const Employees = () => {
                                     </span>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>
-                                    <button className="pill">Edit</button>
-                                    <button className="pill" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.08)', color: 'var(--danger)' }}>Delete</button>
+                                    <button className="pill" onClick={() => handleEdit(e)}>Edit</button>
+                                    <button className="pill" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.08)', color: 'var(--danger)' }} onClick={() => handleDelete(e.id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -168,7 +197,7 @@ const Employees = () => {
             {isModalOpen && (
                 <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
-                        <h2 style={{ marginTop: 0 }}>Add New Employee</h2>
+                        <h2 style={{ marginTop: 0 }}>{editId ? 'Edit Employee' : 'Add New Employee'}</h2>
 
                         <div className="form-row">
                             <input

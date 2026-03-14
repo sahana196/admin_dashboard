@@ -3,7 +3,7 @@
     "id": 1,
     "firstName": "John",
     "lastName": "Doe",
-    "role": "Admin",
+    "role": "Manager",
     "department": "IT",
     "status": "Active"
   },
@@ -17,7 +17,7 @@
   },
   {
     "id": 3,
-    "firstName": "Alice",
+    "firstName": "FinalTest",
     "lastName": "Johnson",
     "role": "Developer",
     "department": "Engineering",
@@ -85,6 +85,14 @@
     "lastName": "U",
     "role": "Developer",
     "department": "Sales",
+    "status": "Active"
+  },
+  {
+    "id": 12,
+    "firstName": "sakshi",
+    "lastName": "k",
+    "role": "Manager",
+    "department": "Engineering",
     "status": "Active"
   }
 ]

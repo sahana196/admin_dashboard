@@ -9,15 +9,25 @@ export const AuthProvider = ({ children }) => {
         return savedUser ? JSON.parse(savedUser) : null;
     });
 
-    const login = (email, password) => {
-        // Mock login 
-        if (email === 'admin@example.com' && password === 'admin') {
-            const userData = { email, name: 'Admin User', role: 'admin' };
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
-            return true;
+    const login = async (email, password) => {
+        try {
+            const res = await fetch('http://localhost:4000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                setUser(data.user);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Login failed", error);
+            return false;
         }
-        return false;
     };
 
     const logout = () => {

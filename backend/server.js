@@ -97,7 +97,65 @@ const saveDepartments = (data) => {
     }
 };
 
+const LOGS_FILE = path.join(__dirname, 'data', 'logs.json');
+
+const getLogs = () => {
+    try {
+        if (!fs.existsSync(LOGS_FILE)) {
+            fs.writeFileSync(LOGS_FILE, '[]');
+            return [];
+        }
+        const data = fs.readFileSync(LOGS_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        console.error("Error reading logs file:", err);
+        return [];
+    }
+};
+
+const saveLog = (action, user, details) => {
+    try {
+        const logs = getLogs();
+        const newLog = {
+            id: Date.now(),
+            action,
+            user,
+            details,
+            time: new Date().toLocaleString(),
+            ip: '127.0.0.1' // Mock IP for local dev
+        };
+        // Keep only last 100 logs
+        const updatedLogs = [newLog, ...logs].slice(0, 100);
+        fs.writeFileSync(LOGS_FILE, JSON.stringify(updatedLogs, null, 2));
+    } catch (err) {
+        console.error("Error saving log:", err);
+    }
+};
+
 // Endpoints
+
+// 0. Logs
+app.get('/api/logs', (req, res) => {
+    const logs = getLogs();
+    res.json(logs);
+});
+
+// 0. Auth
+app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+
+    // Mock Authentication Logic
+    if (email === 'admin@example.com' && password === 'admin') {
+        saveLog('LOGIN', email, 'Successful login');
+        res.json({
+            success: true,
+            user: { email, name: 'Admin User', role: 'admin' }
+        });
+    } else {
+        saveLog('LOGIN_FAILED', email, 'Invalid credentials');
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+});
 
 // 1. KPIs
 app.get('/api/kpis', (req, res) => {
@@ -160,6 +218,7 @@ app.post('/api/employees', (req, res) => {
     };
     employees.push(newEmployee);
     saveEmployees(employees);
+    saveLog('CREATE_EMPLOYEE', 'admin', `Created employee ${newEmployee.firstName} ${newEmployee.lastName}`);
     res.status(201).json(newEmployee);
 });
 
@@ -188,11 +247,40 @@ app.post('/api/employees/upload', upload.single('file'), (req, res) => {
 
         const updatedEmployees = [...employees, ...newEmployees];
         saveEmployees(updatedEmployees);
-
-        res.status(201).json({ message: `Successfully imported ${newEmployees.length} employees`, count: newEmployees.length });
+        res.status(201).json({ message: `Successfully imported ${newEmployees.length} employees` });
     } catch (error) {
         console.error("Upload error:", error);
         res.status(500).json({ error: "Failed to process file" });
+    }
+});
+app.put('/api/employees/:id', (req, res) => {
+    const employees = getEmployees();
+    const id = parseInt(req.params.id);
+    const index = employees.findIndex(e => e.id === id);
+
+    if (index !== -1) {
+        employees[index] = { ...employees[index], ...req.body };
+        saveEmployees(employees);
+        saveLog('UPDATE_EMPLOYEE', 'admin', `Updated employee ${employees[index].firstName} ${employees[index].lastName}`);
+        res.json(employees[index]);
+    } else {
+        res.status(404).json({ error: "Employee not found" });
+    }
+});
+
+app.delete('/api/employees/:id', (req, res) => {
+    const employees = getEmployees();
+    const id = parseInt(req.params.id);
+    const index = employees.findIndex(e => e.id === id);
+
+    if (index !== -1) {
+        const empName = `${employees[index].firstName} ${employees[index].lastName}`;
+        employees.splice(index, 1);
+        saveEmployees(employees);
+        saveLog('DELETE_EMPLOYEE', 'admin', `Deleted employee ${empName}`);
+        res.json({ message: "Employee deleted" });
+    } else {
+        res.status(404).json({ error: "Employee not found" });
     }
 });
 
@@ -289,6 +377,7 @@ app.post('/api/roles', (req, res) => {
     };
     roles.push(newRole);
     saveRoles(roles);
+    saveLog('CREATE_ROLE', 'admin', `Created role ${newRole.name}`);
     res.status(201).json(newRole);
 });
 
@@ -328,8 +417,10 @@ app.delete('/api/departments/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const index = departments.findIndex(d => d.id === id);
     if (index !== -1) {
+        const deptName = departments[index].name;
         departments.splice(index, 1);
         saveDepartments(departments);
+        saveLog('DELETE_DEPARTMENT', 'admin', `Deleted department ${deptName}`);
         res.json({ message: "Department deleted" });
     } else {
         res.status(404).json({ error: "Department not found" });

@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1765809662478,
+    "action": "CREATE_ROLE",
+    "user": "admin",
+    "details": "Created role project Lead",
+    "time": "15/12/2025, 8:11:02 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765809545857,
+    "action": "CREATE_ROLE",
+    "user": "admin",
+    "details": "Created role Auditor",
+    "time": "15/12/2025, 8:09:05 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765809273636,
+    "action": "UPDATE_EMPLOYEE",
+    "user": "admin",
+    "details": "Updated employee John Doe",
+    "time": "15/12/2025, 8:04:33 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765809118397,
+    "action": "UPDATE_EMPLOYEE",
+    "user": "admin",
+    "details": "Updated employee FinalTest Johnson",
+    "time": "15/12/2025, 8:01:58 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765808406104,
+    "action": "LOGIN",
+    "user": "admin@example.com",
+    "details": "Successful login",
+    "time": "15/12/2025, 7:50:06 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765808399502,
+    "action": "LOGIN",
+    "user": "admin@example.com",
+    "details": "Successful login",
+    "time": "15/12/2025, 7:49:59 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765808328597,
+    "action": "CREATE_EMPLOYEE",
+    "user": "admin",
+    "details": "Created employee sakshi k",
+    "time": "15/12/2025, 7:48:48 pm",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": 1765807918754,
+    "action": "LOGIN",
+    "user": "admin@example.com",
+    "details": "Successful login",
+    "time": "15/12/2025, 7:41:58 pm",
+    "ip": "127.0.0.1"
+  }
+]
