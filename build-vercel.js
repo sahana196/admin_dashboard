@@ -10,15 +10,18 @@ try {
     process.exit(1);
 }
 
-const distDir = path.join(__dirname, 'frontend', 'dist');
-if (!fs.existsSync(distDir)) {
-    console.error(`Build directory not found at ${distDir}`);
+const frontendDistDir = path.join(__dirname, 'frontend', 'dist');
+if (!fs.existsSync(frontendDistDir)) {
+    console.error(`Build directory not found at ${frontendDistDir}`);
     process.exit(1);
 }
 
-const rootDir = __dirname;
+const rootDistDir = path.join(__dirname, 'dist');
+if (!fs.existsSync(rootDistDir)) {
+    fs.mkdirSync(rootDistDir);
+}
 
-console.log('Copying build artifacts to root...');
+console.log('Copying build artifacts to root dist folder...');
 
 function copyRecursiveSync(src, dest) {
     const exists = fs.existsSync(src);
@@ -38,10 +41,10 @@ function copyRecursiveSync(src, dest) {
 
 // Only copy the specific files we need to avoid cluttering root too much if possible, 
 // but for a reliable deploy, we copy everything from dist.
-const files = fs.readdirSync(distDir);
+const files = fs.readdirSync(frontendDistDir);
 files.forEach(file => {
-    const src = path.join(distDir, file);
-    const dest = path.join(rootDir, file);
+    const src = path.join(frontendDistDir, file);
+    const dest = path.join(rootDistDir, file);
     
     // Skip node_modules, .git, etc. if they somehow ended up in dist
     if (file === 'node_modules' || file === '.git') return;
