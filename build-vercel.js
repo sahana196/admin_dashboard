@@ -3,9 +3,19 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 console.log('Building frontend...');
-execSync('npm run build --prefix frontend', { stdio: 'inherit' });
+try {
+    execSync('npm run build --prefix frontend', { stdio: 'inherit' });
+} catch (error) {
+    console.error('Frontend build failed!');
+    process.exit(1);
+}
 
 const distDir = path.join(__dirname, 'frontend', 'dist');
+if (!fs.existsSync(distDir)) {
+    console.error(`Build directory not found at ${distDir}`);
+    process.exit(1);
+}
+
 const rootDir = __dirname;
 
 console.log('Copying build artifacts to root...');
